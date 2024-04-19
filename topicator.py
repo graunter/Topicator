@@ -46,14 +46,17 @@ def on_message(client, userdata, msg):
     client.publish(mqttPath, nodeData)
 
 
-signal.signal(signal.SIGINT, signal_handler)
-signal.signal(signal.SIGTERM, signal_handler)
-args = parser.parse_args()
 
-client = mqtt.Client()
-client.on_connect = on_connect
-client.on_message = on_message
 
-client.connect(args.host, int(args.port), 60)
+if __name__ == "main":
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+    args = parser.parse_args()
 
-client.loop_forever()
+    client = mqtt.Client()
+    client.on_connect = on_connect
+    client.on_message = on_message
+
+    client.connect(args.host, int(args.port), 60)
+
+    client.loop_forever()
