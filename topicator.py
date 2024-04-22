@@ -10,22 +10,6 @@ def signal_handler(signal, frame):
     print('You pressed Ctrl+C!')
     client.disconnect()
 
-
-parser = argparse.ArgumentParser(description='Send MQTT payload received from a topic to any.', 
-    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-
-parser.add_argument('-a', '--adr-broker', dest='host', action="store", default="127.0.0.1",
-                   help='Specify the MQTT host to connect to.')
-parser.add_argument('-p', '--port-broker', dest='port', action="store", default="1883",
-                   help='Specify the MQTT host to connect to.')
-parser.add_argument('-i', '--in_topic', dest='itopic', action="store", default="Test/In/#",
-                   help='The listening MQTT topic.')
-parser.add_argument('-o', '--out_topic', dest='otopic', action="store", default="Test/Out",
-                   help='The output MQTT topic.')
-parser.add_argument('-v', '--verbose', dest='verbose', action="store_true", default=False,
-                   help='Enable debug messages.')
-
-
 def debug(msg):
     if verbose:
         print (msg + "\n")
@@ -48,7 +32,23 @@ def on_message(client, userdata, msg):
 
 
 
-if __name__ == "main":
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description='Send MQTT payload received from a topic to any.', 
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+    parser.add_argument('-a', '--adr-broker', dest='host', action="store", default="127.0.0.1",
+                    help='Specify the MQTT host to connect to.')
+    parser.add_argument('-p', '--port-broker', dest='port', action="store", default="1883",
+                    help='Specify the MQTT host to connect to.')
+    parser.add_argument('-i', '--in_topic', dest='itopic', action="store", default="Test/In/#",
+                    help='The listening MQTT topic.')
+    parser.add_argument('-o', '--out_topic', dest='otopic', action="store", default="Test/Out",
+                    help='The output MQTT topic.')
+    parser.add_argument('-v', '--verbose', dest='verbose', action="store_true", default=False,
+                    help='Enable debug messages.')
+
+
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
     args = parser.parse_args()
