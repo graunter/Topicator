@@ -1,0 +1,11 @@
+broker:
+    host: "localhost"
+    port: 1883
+    user: ""
+    password: ""
+
+topics:
+    - In: "A1"
+      Out: "Out1"
+    - In: "A2"
+      Out: "Out2"

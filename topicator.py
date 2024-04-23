@@ -3,6 +3,7 @@
 import os, re, time, json, argparse, signal
 import paho.mqtt.client as mqtt # pip install paho-mqtt
 import urllib.parse
+from config import MyConfig
 
 verbose = False
 
@@ -53,10 +54,18 @@ if __name__ == "__main__":
     signal.signal(signal.SIGTERM, signal_handler)
     args = parser.parse_args()
 
+    debug("Topicator started!")
+
+    Cfg = MyConfig()
+
     client = mqtt.Client()
     client.on_connect = on_connect
     client.on_message = on_message
 
     client.connect(args.host, int(args.port), 60)
 
+    for Topic in Cfg.topics:
+        client.subscribe(Topic["In"])   
+        
     client.loop_forever()
+
