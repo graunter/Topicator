@@ -1,0 +1,7 @@
+#!/bin/bash
+
+chmod +x /etc/init.d/topicator
+
+update-rc.d topicator defaults
+
+service topicator start

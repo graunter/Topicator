@@ -16,6 +16,7 @@ def debug(msg):
         print (msg + "\n")
 
 def on_connect(client, userdata, flags, rc):
+    
     debug("Connected with result code "+str(rc))
     # Подписка при подключении означает, что если было потеряно соединение
     # и произошло переподключение - то подписка будет обновлена

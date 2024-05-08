@@ -1,0 +1,9 @@
+
+Package: topicator
+Version: 0.0.1
+Section: misc
+Priority: optional
+Depends: python3 (>= 3.5.3), python3-paho-mqtt (>= 1.5)
+Maintainer: STDU
+Architecture: all
+Description: MQTT messages processor
