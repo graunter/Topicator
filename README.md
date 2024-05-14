@@ -28,6 +28,7 @@ service topicator status   - статус
 
 1. Для корректной работы должен быть установлен и сконфигурирован брокер сообщений Mosquitto
 <details>
+
 ```
 sudo apt-add-repository ppa:mosquitto-dev/mosquitto-ppa.
 sudo apt-get update.

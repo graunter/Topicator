@@ -3,5 +3,5 @@ topicator (0.0.1) stable; urgency=medium
 
 
 [Sergey Zhukov]
-* 0.0.1 - just forwarding mesages from one topic to another one
+* 0.0.1 - just forwarding messages from one topic to another one
 

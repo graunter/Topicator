@@ -12,5 +12,8 @@ class MyConfig:
         with p.open("r") as f:
             CfgData = yaml.safe_load(f)
 
-        self.broker = CfgData["broker"]
-        self.topics = CfgData["topics"]
+        self.host = CfgData["broker"]["host"]
+        self.port = CfgData["broker"]["port"]
+        self.topics = {}
+        for item in CfgData["topics"]:
+            self.topics[item["In"]] = item["Out"]
