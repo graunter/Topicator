@@ -1,17 +1,17 @@
 #!/bin/sh
 
 ### BEGIN INIT INFO
-# Provides:          ddg-idd-driver
+# Provides:          topicator
 # Required-Start:    $all mosquitto
 # Required-Stop:     $all
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: STDU DDG and IDD driver
-# Description:       STDU DDG and IDD driver
+# Short-Description: MQTT topics processor
+# Description:       MQTT topics processor
 ### END INIT INFO
  
-NAME=ddg-idd-driver
-DESC="ddg-idd-driver"
+NAME=topicator
+DESC="topicator"
 WORKING_PATH=/etc/${NAME}
 EXE_PATH=/opt/${NAME}
 DAEMON="$WORKING_PATH/start.sh"

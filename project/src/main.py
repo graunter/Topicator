@@ -3,7 +3,9 @@
 import os, re, time, json, argparse, signal
 import paho.mqtt.client as mqtt # pip install paho-mqtt
 import urllib.parse
-from config import MyConfig
+from my_config import MyConfig
+#import yaml
+#from pathlib import Path
 
 class Topicator:
     def __init__(self, Cfg):
@@ -55,10 +57,14 @@ if __name__ == "__main__":
     parser.add_argument('-v', '--verbose', dest='verbose', action="store_true", default=False,
                     help='Enable debug messages.')
 
+    args = parser.parse_args()
     
     Cfg = MyConfig()
     
     topicator = Topicator(Cfg)
+
+    if args.verbose: 
+        topicator.verbose = True
 
     signal.signal(signal.SIGINT, topicator.signal_handler)
     signal.signal(signal.SIGTERM, topicator.signal_handler)
@@ -68,8 +74,6 @@ if __name__ == "__main__":
     client = mqtt.Client()
     client.on_connect = topicator.on_connect
     client.on_message = topicator.on_message
-
-    args = parser.parse_args()
     
     Host = args.host if args.host is not None else Cfg.host
     Port = args.port if args.host is not None else Cfg.port

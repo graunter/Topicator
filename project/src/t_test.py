@@ -1,5 +1,5 @@
 import pytest
-import topicator as tp
+import main as tp
 
 def test_first():
     print('T First')

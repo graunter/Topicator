@@ -34,7 +34,8 @@ sshpass -p $BUILD_PLATFORM_PASS scp -P $BUILD_PLATFORM_PORT ../src/*.* $USER@$BU
 cmd1="--add-data \"config.yaml:.\""
 cmd2="--distpath $DIST_PATH"
 cmd3="--specpath $BUILD_PATH"
-cmd="pyinstaller --onefile -y -n '$EXE_NAME' $cmd1 $cmd2 $cmd3 $BUILD_PATH/main.py"
+cmd4="-d all"
+cmd="pyinstaller --onefile -y -n '$EXE_NAME' $cmd1 $cmd2 $cmd3 --clean $BUILD_PATH/main.py" 
 echo $cmd
 sshpass -p $BUILD_PLATFORM_PASS ssh $USER@$BUILD_PLATFORM_ADDRESS -p $BUILD_PLATFORM_PORT "$cmd" 
 
