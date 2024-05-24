@@ -2,15 +2,16 @@
 
 import os, re, time, json, argparse, signal
 import paho.mqtt.client as mqtt # pip install paho-mqtt
-import urllib.parse
 from my_config import MyConfig
-#import yaml
-#from pathlib import Path
+import paho.mqtt.client as mqtt
 
-class Topicator:
-    def __init__(self, Cfg):
+
+class CTopicator:
+    def __init__(self, Cfg: MyConfig):
         self.verbose = False
         self.cfg = Cfg
+        self.componets = Cfg.get_components()
+
 
     def signal_handler(self, signal, frame):
         print('You pressed Ctrl+C!')
@@ -25,23 +26,15 @@ class Topicator:
         self.debug("Connected with result code "+str(rc))
         # Подписка при подключении означает, что если было потеряно соединение
         # и произошло переподключение - то подписка будет обновлена
-        for Topic in Cfg.topics.keys():
-            client.subscribe(Topic)   
 
-    def on_message(self, client, userdata, msg):
-        #InTopicName = msg.topic.split('/') [-1]
-        tstamp = int(time.time())
-        #mqttPath = urllib.parse.urljoin(args.otopic + '/', InTopicName)
-        mqttPath = msg.topic
-
-        OutTopic = Cfg.topics.get(msg.topic)
-        if OutTopic is not None:
-            self.debug("Received message from {0} with payload {1} to be published to {2}".format(msg.topic, str(msg.payload), mqttPath))    
-        
-            nodeData = msg.payload
-            client.publish(OutTopic, nodeData)
+        for i, (key, Comp) in enumerate(self.componets.items()):
+            Comp.on_connect( client )
 
 
+    def on_message(self, client: mqtt.Client, userdata, msg: mqtt.MQTTMessage):
+
+        if msg.topic in self.componets:
+            self.componets[msg.topic].on_message( client, userdata, msg)
 
 
 if __name__ == "__main__":
@@ -61,7 +54,7 @@ if __name__ == "__main__":
     
     Cfg = MyConfig()
     
-    topicator = Topicator(Cfg)
+    topicator = CTopicator(Cfg)
 
     if args.verbose: 
         topicator.verbose = True

@@ -1,1 +1,1 @@
-CONFIG_FILE = "/etc/topicator/config.yaml"
+CONFIG_FILE = "config.yaml"
