@@ -4,6 +4,7 @@ import os, re, time, json, argparse, signal
 import paho.mqtt.client as mqtt # pip install paho-mqtt
 from my_config import MyConfig
 import paho.mqtt.client as mqtt
+import logging
 
 
 class CTopicator:
@@ -52,12 +53,18 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     
+    loglevel = logging.INFO 
+    if args.verbose: 
+        loglevel = logging.DEBUG
+
+    logging.basicConfig(level=loglevel)
+    
     Cfg = MyConfig()
     
     topicator = CTopicator(Cfg)
-
     if args.verbose: 
         topicator.verbose = True
+
 
     signal.signal(signal.SIGINT, topicator.signal_handler)
     signal.signal(signal.SIGTERM, topicator.signal_handler)

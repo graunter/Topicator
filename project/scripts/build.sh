@@ -50,5 +50,8 @@ sshpass -p $BUILD_PLATFORM_PASS scp -P $BUILD_PLATFORM_PORT $USER@$BUILD_PLATFOR
 cp -a package $OUTPUT_PATH
 cp ../../project/src/config.yaml $PACKAGE_PATH/etc/$PROJECT_NAME/
 
+mkdir ~/$PROJECT_NAME/
+cp ../../project/src/config.yaml ~/$PROJECT_NAME/
+
 version=$(cat $PACKAGE_PATH/DEBIAN/control | grep 'Version:' | awk '{print$2}')
 dpkg-deb --root-owner-group -Z gzip -b $PACKAGE_PATH "${OUTPUT_PATH}/${EXE_NAME}-${version}-${ARCHITECTURE}.deb"
