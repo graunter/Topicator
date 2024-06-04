@@ -1,3 +1,5 @@
+import glob
+import re
 import yaml
 from pathlib import Path
 from component import CComponent
@@ -7,6 +9,7 @@ from constants import *
 from threading import Lock, Thread
 import logging
 import os
+from collections import defaultdict
 
 class MySingletone(type):
 
@@ -34,34 +37,47 @@ class MyConfig(metaclass=MySingletone):
         logging.debug('system file: ' + str(system_p))
         logging.debug('user file: ' + str(user_p))
 
+        #self.topics = {}
+        self.Comps = {}
 
-        if os.path.isfile(golden_p):
-            with golden_p.open("r") as golden_f:
-                g_CfgData = yaml.safe_load(golden_f)
-                self.CfgData = g_CfgData
+        cfg_files_p = [f for f in (Path.home()/COMMON_PATH).iterdir() if f.match("*config.yaml")]
 
-        if os.path.isfile(system_p):
-            with system_p.open("r") as system_f:
-                s_CfgData = yaml.safe_load(system_f)
-                self.CfgData = g_CfgData | s_CfgData
+        cfg_files = [golden_p, system_p] + cfg_files_p
 
-        if os.path.isfile(user_p):
-            with user_p.open("r") as user_f:
+        for u_file in cfg_files:
+            with u_file.open("r") as user_f:
                 u_CfgData = yaml.safe_load(user_f)
-                self.CfgData = self.CfgData | u_CfgData
+                self.extract_config(u_CfgData)
 
-        self.host = self.CfgData["broker"]["host"]
-        self.port = self.CfgData["broker"]["port"]
-        self.topics = {}
-        for item in self.CfgData["topics"]:
-            self.topics[item["In"]] = item["Out"]
 
-    def get_components(self) -> dict[str, CComponent]:
-        #total = dict[str, CComponent]
-        total = {}
-        for item in self.CfgData["topics"]:
+
+    def extract_config(self, CfgData: list):
+
+        Broker = CfgData.get("broker", {})
+
+        self.host = Broker.get("host", "localhost")
+        self.port = Broker.get("port", 1883)                
+
+        self.extract_components(CfgData)
+
+
+    def extract_components(self, CfgData: list):
+
+        TestTop = CfgData.get("topics", [])
+
+
+        for item in CfgData.get("topics", []):
+
             Comp = CComponent(item["In"], item["Out"])
-            total[ item["In"] ] = Comp
-        
-        return total
-            
+
+            #for Input in item.get("In", []):
+            self.Comps.setdefault( item["In"], [] )
+            self.Comps[ item["In"] ].append(Comp)
+
+
+    def get_components(self) -> dict[str, CComponent]:   
+        return self.Comps
+
+
+if __name__ == "__main__":
+        Cfg = MyConfig()

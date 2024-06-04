@@ -28,14 +28,16 @@ class CTopicator:
         # Подписка при подключении означает, что если было потеряно соединение
         # и произошло переподключение - то подписка будет обновлена
 
-        for i, (key, Comp) in enumerate(self.componets.items()):
-            Comp.on_connect( client )
+        for i, (key, CompLst) in enumerate(self.componets.items()):
+            for OneComp in CompLst:
+                OneComp.on_connect( client )
 
 
     def on_message(self, client: mqtt.Client, userdata, msg: mqtt.MQTTMessage):
 
-        if msg.topic in self.componets:
-            self.componets[msg.topic].on_message( client, userdata, msg)
+        #if msg.topic in self.componets:
+        for item in self.componets[msg.topic]:
+            item.on_message( client, userdata, msg)
 
 
 if __name__ == "__main__":
