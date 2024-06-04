@@ -39,6 +39,8 @@ class MyConfig(metaclass=MySingletone):
 
         #self.topics = {}
         self.Comps = {}
+        self.host = "localhost"
+        self.port = 1883
 
         cfg_files_p = [f for f in (Path.home()/COMMON_PATH).iterdir() if f.match("*config.yaml")]
 
@@ -55,8 +57,9 @@ class MyConfig(metaclass=MySingletone):
 
         Broker = CfgData.get("broker", {})
 
-        self.host = Broker.get("host", "localhost")
-        self.port = Broker.get("port", 1883)                
+        if Broker is not None:
+            self.host = Broker.get("host", self.host)
+            self.port = Broker.get("port", self.port)                
 
         self.extract_components(CfgData)
 
