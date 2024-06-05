@@ -71,7 +71,7 @@ class MyConfig(metaclass=MySingletone):
 
         for item in CfgData.get("topics", []):
 
-            Comp = CComponent(item["In"], item["Out"])
+            Comp = CComponent(item["In"], item["Out"], item.get("Op"))
 
             #for Input in item.get("In", []):
             self.Comps.setdefault( item["In"], [] )
