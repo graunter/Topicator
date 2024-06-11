@@ -2,46 +2,44 @@
 
 import os, re, time, json, argparse, signal
 import paho.mqtt.client as mqtt # pip install paho-mqtt
-import urllib.parse
 from my_config import MyConfig
-#import yaml
-#from pathlib import Path
+import paho.mqtt.client as mqtt
+import logging
+import json
 
-class Topicator:
-    def __init__(self, Cfg):
-        self.verbose = False
+
+verbose = False
+
+def debug(msg):
+    if verbose:
+        print (msg + "\n")
+
+class CTopicator:
+    def __init__(self, Cfg: MyConfig):
         self.cfg = Cfg
+        self.componets = Cfg.get_components()
+
 
     def signal_handler(self, signal, frame):
         print('You pressed Ctrl+C!')
         client.disconnect()
 
-    def debug(self, msg):
-        if self.verbose:
-            print (msg + "\n")
-
     def on_connect(self, client, userdata, flags, rc):
         
-        self.debug("Connected with result code "+str(rc))
+        logging.debug("Connected with result code "+str(rc))
         # Подписка при подключении означает, что если было потеряно соединение
         # и произошло переподключение - то подписка будет обновлена
-        for Topic in Cfg.topics.keys():
-            client.subscribe(Topic)   
 
-    def on_message(self, client, userdata, msg):
-        #InTopicName = msg.topic.split('/') [-1]
-        tstamp = int(time.time())
-        #mqttPath = urllib.parse.urljoin(args.otopic + '/', InTopicName)
-        mqttPath = msg.topic
-
-        OutTopic = Cfg.topics.get(msg.topic)
-        if OutTopic is not None:
-            self.debug("Received message from {0} with payload {1} to be published to {2}".format(msg.topic, str(msg.payload), mqttPath))    
-        
-            nodeData = msg.payload
-            client.publish(OutTopic, nodeData)
+        for i, (key, CompLst) in enumerate(self.componets.items()):
+            for OneComp in CompLst:
+                OneComp.on_connect( client )
 
 
+    def on_message(self, client: mqtt.Client, userdata, msg: mqtt.MQTTMessage):
+
+        #if msg.topic in self.componets:
+        for item in self.componets[msg.topic]:
+            item.on_message( client, userdata, msg )
 
 
 if __name__ == "__main__":
@@ -59,17 +57,23 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     
+    loglevel = logging.INFO 
+    if args.verbose: 
+        loglevel = logging.DEBUG
+
+    logging.basicConfig(level=loglevel)
+    
     Cfg = MyConfig()
     
-    topicator = Topicator(Cfg)
-
+    topicator = CTopicator(Cfg)
     if args.verbose: 
         topicator.verbose = True
+
 
     signal.signal(signal.SIGINT, topicator.signal_handler)
     signal.signal(signal.SIGTERM, topicator.signal_handler)
 
-    topicator.debug("Topicator started!")
+    debug("Topicator started!")
 
     client = mqtt.Client()
     client.on_connect = topicator.on_connect
@@ -78,6 +82,7 @@ if __name__ == "__main__":
     Host = args.host if args.host is not None else Cfg.host
     Port = args.port if args.host is not None else Cfg.port
 
+    logging.debug("Try connection to " + str(Host) + " with port " + str(Port) )
     client.connect(Host, Port)
         
     client.loop_forever()
