@@ -5,11 +5,17 @@ import paho.mqtt.client as mqtt # pip install paho-mqtt
 from my_config import MyConfig
 import paho.mqtt.client as mqtt
 import logging
+import json
 
+
+verbose = False
+
+def debug(msg):
+    if verbose:
+        print (msg + "\n")
 
 class CTopicator:
     def __init__(self, Cfg: MyConfig):
-        self.verbose = False
         self.cfg = Cfg
         self.componets = Cfg.get_components()
 
@@ -18,13 +24,9 @@ class CTopicator:
         print('You pressed Ctrl+C!')
         client.disconnect()
 
-    def debug(self, msg):
-        if self.verbose:
-            print (msg + "\n")
-
     def on_connect(self, client, userdata, flags, rc):
         
-        self.debug("Connected with result code "+str(rc))
+        logging.debug("Connected with result code "+str(rc))
         # Подписка при подключении означает, что если было потеряно соединение
         # и произошло переподключение - то подписка будет обновлена
 
@@ -37,7 +39,7 @@ class CTopicator:
 
         #if msg.topic in self.componets:
         for item in self.componets[msg.topic]:
-            item.on_message( client, userdata, msg)
+            item.on_message( client, userdata, msg )
 
 
 if __name__ == "__main__":
@@ -71,7 +73,7 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, topicator.signal_handler)
     signal.signal(signal.SIGTERM, topicator.signal_handler)
 
-    topicator.debug("Topicator started!")
+    debug("Topicator started!")
 
     client = mqtt.Client()
     client.on_connect = topicator.on_connect
@@ -80,6 +82,7 @@ if __name__ == "__main__":
     Host = args.host if args.host is not None else Cfg.host
     Port = args.port if args.host is not None else Cfg.port
 
+    logging.debug("Try connection to " + str(Host) + " with port " + str(Port) )
     client.connect(Host, Port)
         
     client.loop_forever()

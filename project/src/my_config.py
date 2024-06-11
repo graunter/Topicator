@@ -10,6 +10,7 @@ from threading import Lock, Thread
 import logging
 import os
 from collections import defaultdict
+from typing import List, Dict
 
 class MySingletone(type):
 
@@ -38,7 +39,9 @@ class MyConfig(metaclass=MySingletone):
         logging.debug('user file: ' + str(user_p))
 
         #self.topics = {}
-        self.Comps = {}
+        #self.Comps = {}
+        #self.Comps = dict[str, CComponent]
+        self.Comps = defaultdict(list[CComponent])
         self.host = "localhost"
         self.port = 1883
 
@@ -54,31 +57,39 @@ class MyConfig(metaclass=MySingletone):
 
 
     def extract_config(self, CfgData: list):
+       
+        self.extract_connection(CfgData)
+        self.extract_components(CfgData)
+
+
+    def extract_connection(self, CfgData: list):
 
         Broker = CfgData.get("broker", {})
 
         if Broker is not None:
             self.host = Broker.get("host", self.host)
-            self.port = Broker.get("port", self.port)                
-
-        self.extract_components(CfgData)
-
+            self.port = Broker.get("port", self.port)      
+        
 
     def extract_components(self, CfgData: list):
 
-        TestTop = CfgData.get("topics", [])
+        if CfgData and CfgData["topics"] is not None:
+            for item in CfgData.get("topics", []):
+
+                Comp = CComponent(item["In"], item["Out"], item.get("Op"))
+
+                #TODO: Components with equial input and output names shoudn't be dublicate
+                for PresentComp in self.Comps[item["In"]]:
+                    if item["Out"] == PresentComp.OutTopicName:
+                        logging.warning('Shortage: In - ' + item["In"] + ' with Out - ' + item["Out"] + ' results to signal dublication!')
 
 
-        for item in CfgData.get("topics", []):
-
-            Comp = CComponent(item["In"], item["Out"], item.get("Op"))
-
-            #for Input in item.get("In", []):
-            self.Comps.setdefault( item["In"], [] )
-            self.Comps[ item["In"] ].append(Comp)
+                # connect (new) input name with the current consummer
+                self.Comps.setdefault( item["In"], [] )
+                self.Comps[ item["In"] ].append(Comp)
 
 
-    def get_components(self) -> dict[str, CComponent]:   
+    def get_components(self) -> Dict[str, List[CComponent]]:   
         return self.Comps
 
 

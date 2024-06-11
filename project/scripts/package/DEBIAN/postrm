@@ -4,4 +4,5 @@ update-rc.d topicator remove
 
 rm -fr /etc/topicator
 rm -fr /opt/topicator
+rm -fr ~/topicator
 
