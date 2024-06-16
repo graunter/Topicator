@@ -1,8 +1,9 @@
-topicator (0.2.0) stable; urgency=medium
+topicator (0.2.1) stable; urgency=medium
 
 
 
 [Sergey Zhukov]
-* 0.2.0 - math operations
+* 0.2.1 - helper message for incorrect YAML and bugfix for connect message
+  0.2.0 - math operations
   0.0.1 - just forwarding messages from one topic to another one
 

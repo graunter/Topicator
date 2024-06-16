@@ -37,7 +37,7 @@ class CComponent:
 
     def on_connect(self, client: mqtt.Client):
         client.subscribe( self.InTopicName )  
-        logging.debug('Subscription: ' + self.InTopicName + ' -> ' + self.Expr + ' -> ' + self.OutTopicName)
+        logging.debug('Subscription: ' + self.InTopicName + ' -> ' + str(self.Expr) + ' -> ' + self.OutTopicName)
 
     def on_message(self, client: mqtt.Client, userdata, msg: mqtt.MQTTMessage):
         

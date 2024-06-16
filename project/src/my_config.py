@@ -51,8 +51,12 @@ class MyConfig(metaclass=MySingletone):
 
         for u_file in cfg_files:
             with u_file.open("r") as user_f:
-                u_CfgData = yaml.safe_load(user_f)
-                self.extract_config(u_CfgData)
+                try:
+                    u_CfgData = yaml.safe_load(user_f)
+                    self.extract_config(u_CfgData)
+                except Exception as e:
+                    logging.error("YAML file " + user_f.name + " is incorrect and will be skipped: " + ': Message: ' + format(e) )
+                    pass     
 
 
 
