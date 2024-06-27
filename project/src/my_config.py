@@ -50,6 +50,8 @@ class MyConfig(metaclass=MySingletone):
         cfg_files = [golden_p, system_p] + cfg_files_p
 
         for u_file in cfg_files:
+            # todo: wrong file name processing
+            #  try:
             with u_file.open("r") as user_f:
                 try:
                     u_CfgData = yaml.safe_load(user_f)
@@ -57,7 +59,9 @@ class MyConfig(metaclass=MySingletone):
                 except Exception as e:
                     logging.error("YAML file " + user_f.name + " is incorrect and will be skipped: " + ': Message: ' + format(e) )
                     pass     
-
+            # except Exception as e:
+            #   logging.error("Can't open file" + user_f.name + " - it will be skipped: " + ': Message: ' + format(e) )
+            #   pass     
 
 
     def extract_config(self, CfgData: list):

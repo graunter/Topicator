@@ -6,6 +6,8 @@ broker:
 
 topics:
   # the following data could be used for test purposes
+    # - In: "full/path/to/input_topic_name"
+    #   Out: "/another/path/to/output_topic_name"
     # - In: "A1"
     #   Out: "Out1"
     #   Op: "10*In"
